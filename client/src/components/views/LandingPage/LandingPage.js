@@ -7,14 +7,31 @@ const { Meta } = Card;
 
 function LandingPage() {
     const [Products, setProducts] = useState([])
+    const [Skip, setSkip] = useState(0)
+    const [Limit, setLimit] = useState(8)
+    const [ProductSize, setProductSize] = useState(0)
+
     useEffect(() => {
-        Axios.post('/api/product/products')
+        const body = { skip: Skip, limit: Limit }
+        getProducts(body)
+    }, [])
+
+    const getProducts = (body) => {
+        Axios.post('/api/product/products', body)
             .then(res => {
                 if (res.data.success) {
-                    setProducts(res.data.info)
+                    if (body.loadMore) setProducts([...Products, ...res.data.info])
+                    else setProducts(res.data.info)
+                    setProductSize(res.data.productSize)
                 } else alert('상품 정보 가져오기 실패')
             })
-    }, [])
+    }
+    const loadMoreHandler = () => {
+        const skip = Skip + Limit
+        const body = { skip, limit: Limit, loadMore: true }
+        getProducts(body)
+        setSkip(skip)
+    }
     const renderCards = Products.map((product, index) => {
         return (
             <Col lg={6} md={8} xs={24} key={index}>
@@ -37,9 +54,11 @@ function LandingPage() {
             <Row gutter={[16, 16]}>
                 {renderCards}
             </Row>
-            <div style={{ textAlign: 'center' }}>
-                <button>더보기</button>
-            </div>
+            {ProductSize >= Limit &&
+                <div style={{ textAlign: 'center' }}>
+                    <button onClick={loadMoreHandler}>더보기</button>
+                </div>
+            }
         </div>
     )
 }
