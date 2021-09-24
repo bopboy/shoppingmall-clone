@@ -42,7 +42,7 @@ function UploadProductPage(props) {
         if (!Title || !Description || !Price || !Continent || !Images) return alert("모두 입력해")
         const body = {
             writer: props.user.userData._id,
-            title: Title,
+            title: ProductName,
             description: Description,
             price: Price,
             images: Images,
