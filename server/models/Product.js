@@ -8,6 +8,7 @@ const productSchema = mongoose.Schema({
     price: { type: Number, default: 0 },
     images: { type: Array, default: [] },
     sold: { type: Number, maxlength: 100, default: 0 },
+    continent: { type: Number, default: 1 },
     views: { type: Number, default: 0 }
 }, { timestamps: true })
 

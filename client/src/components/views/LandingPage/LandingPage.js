@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Axios from 'axios'
 import { Icon, Col, Card, Row } from 'antd'
 import ImageSlider from '../../utils/ImageSlider';
+import CheckBox from './Sections/CheckBox';
+import { continents } from './Sections/Data'
 
 const { Meta } = Card;
 
@@ -10,6 +12,7 @@ function LandingPage() {
     const [Skip, setSkip] = useState(0)
     const [Limit, setLimit] = useState(8)
     const [ProductSize, setProductSize] = useState(0)
+    const [Filters, setFilters] = useState({ continents: [], prices: [] })
 
     useEffect(() => {
         const body = { skip: Skip, limit: Limit }
@@ -46,11 +49,22 @@ function LandingPage() {
             </Col>
         )
     })
+    const showFilteredResult = (filter) => {
+        const body = { skip: 0, limit: Limit, filter }
+        getProducts(body)
+        setSkip(0)
+    }
+    const handleFilters = (filter, category) => {
+        const newFilter = { ...Filters }
+        newFilter[category] = filter
+        showFilteredResult(newFilter)
+    }
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
                 <h1>Let's Travel Anywhere</h1>
             </div>
+            <CheckBox list={continents} handleFilters={filter => handleFilters(filter, "continent")} />
             <Row gutter={[16, 16]}>
                 {renderCards}
             </Row>
