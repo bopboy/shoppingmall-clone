@@ -28,10 +28,10 @@ router.post('/', (req, res) => {
 router.post('/products', (req, res) => {
     const limit = req.body.limit ? parseInt(req.body.limit) : 20
     const skip = req.body.skip ? parseInt(req.body.skip) : 0
+    const term = req.body.searchTerm
     const findArgs = {}
     for (let key in req.body.filter)
         if (req.body.filter[key].length > 0) {
-            console.log('key', key)
             if (key === 'price') {
                 findArgs[key] = {
                     $gte: req.body.filter[key][0],
@@ -42,9 +42,16 @@ router.post('/products', (req, res) => {
             }
         }
     console.log('findArgs', findArgs)
-    Product.find(findArgs).populate('writer').skip(skip).limit(limit).exec((err, info) => {
-        if (err) return res.status(400).json({ success: false, err })
-        return res.status(200).json({ success: true, info, productSize: info.length })
-    })
+    if (term)
+        Product.find(findArgs).find({ $text: { $search: term } })
+            .populate('writer').skip(skip).limit(limit).exec((err, info) => {
+                if (err) return res.status(400).json({ success: false, err })
+                return res.status(200).json({ success: true, info, productSize: info.length })
+            })
+    else
+        Product.find(findArgs).populate('writer').skip(skip).limit(limit).exec((err, info) => {
+            if (err) return res.status(400).json({ success: false, err })
+            return res.status(200).json({ success: true, info, productSize: info.length })
+        })
 })
 module.exports = router
