@@ -1,6 +1,8 @@
+const { response } = require('express')
 const express = require('express')
 const router = express.Router()
 const multer = require('multer')
+const { reset } = require('nodemon')
 const { Product } = require('../models/Product')
 
 const storage = multer.diskStorage({
@@ -53,5 +55,15 @@ router.post('/products', (req, res) => {
             if (err) return res.status(400).json({ success: false, err })
             return res.status(200).json({ success: true, info, productSize: info.length })
         })
+})
+router.get('/products_by_id', (req, res) => {
+
+    const type = req.query.type
+    const productId = req.query.id
+
+    Product.find({ _id: productId }).populate('writer').exec((err, product) => {
+        if (err) return res.status(400).send(err)
+        return res.status(200).send({ success: true, product })
+    })
 })
 module.exports = router
