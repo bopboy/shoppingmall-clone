@@ -3,7 +3,8 @@ import Axios from 'axios'
 import { Icon, Col, Card, Row } from 'antd'
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
-import { continents } from './Sections/Data'
+import RadioBox from './Sections/RadioBox';
+import { continents, price } from './Sections/Data'
 
 const { Meta } = Card;
 
@@ -54,26 +55,48 @@ function LandingPage() {
         getProducts(body)
         setSkip(0)
     }
+    const handlePrice = (value) => {
+        const data = price
+        let array = []
+        for (let key in data)
+            if (data[key]._id === parseInt(value, 10)) array = data[key].array
+        return array
+
+    }
     const handleFilters = (filter, category) => {
         const newFilter = { ...Filters }
         newFilter[category] = filter
+
+        if (category === 'price') {
+            const priceArr = handlePrice(filter)
+            newFilter[category] = priceArr
+        }
         showFilteredResult(newFilter)
+        setFilters(newFilter)
     }
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
                 <h1>Let's Travel Anywhere</h1>
             </div>
-            <CheckBox list={continents} handleFilters={filter => handleFilters(filter, "continent")} />
+            <Row gutter={[16, 16]}>
+                <Col lg={12} xs={24}>
+                    <CheckBox list={continents} handleFilters={filter => handleFilters(filter, "continent")} />
+                </Col>
+                <Col lg={12} xs={24}>
+                    <RadioBox list={price} handleFilters={filter => handleFilters(filter, "price")} />
+                </Col>
+            </Row>
             <Row gutter={[16, 16]}>
                 {renderCards}
             </Row>
-            {ProductSize >= Limit &&
+            {
+                ProductSize >= Limit &&
                 <div style={{ textAlign: 'center' }}>
                     <button onClick={loadMoreHandler}>더보기</button>
                 </div>
             }
-        </div>
+        </div >
     )
 }
 

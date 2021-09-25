@@ -30,7 +30,17 @@ router.post('/products', (req, res) => {
     const skip = req.body.skip ? parseInt(req.body.skip) : 0
     const findArgs = {}
     for (let key in req.body.filter)
-        if (req.body.filter[key].length > 0) findArgs[key] = req.body.filter[key]
+        if (req.body.filter[key].length > 0) {
+            console.log('key', key)
+            if (key === 'price') {
+                findArgs[key] = {
+                    $gte: req.body.filter[key][0],
+                    $lte: req.body.filter[key][1]
+                }
+            } else {
+                findArgs[key] = req.body.filter[key]
+            }
+        }
     console.log('findArgs', findArgs)
     Product.find(findArgs).populate('writer').skip(skip).limit(limit).exec((err, info) => {
         if (err) return res.status(400).json({ success: false, err })
