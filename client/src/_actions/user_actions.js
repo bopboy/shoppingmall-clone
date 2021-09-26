@@ -60,8 +60,8 @@ export function getCartItems(cartItems, userCart) {
     const request = axios.get(`/api/product/products_by_id?id=${cartItems}&type=array`)
         .then(res => {
             userCart.forEach(cartItem => {
-                res.data.product.forEach((productDetail, index) => {
-                    if (cartItem.id === productDetail._id) res.data.product[index].quantity = cartItem.quantity
+                res.data.forEach((productDetail, index) => {
+                    if (cartItem.id === productDetail._id) res.data[index].quantity = cartItem.quantity
                 })
             })
             return res.data
