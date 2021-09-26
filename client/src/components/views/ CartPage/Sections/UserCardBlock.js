@@ -6,8 +6,8 @@ function UserCardBlock(props) {
         if (images.length > 0) return `http://localhost:5000/${images[0]}`
     }
     const renderItems = () => (
-        props.products && props.products.map(product => (
-            <tr>
+        props.products && props.products.map((product, index) => (
+            <tr key={index}>
                 <td>
                     <img src={renderCartImage(product.images)} style={{ width: '70px' }} alt="상품 이미지" />
                 </td>
