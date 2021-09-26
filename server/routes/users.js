@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
+const { Product } = require('../models/Product')
 
 const { auth } = require("../middleware/auth");
 
@@ -100,6 +101,16 @@ router.post("/addToCart", auth, (req, res) => {
                     return res.status(200).send(userInfo.cart)
                 }
             )
+    })
+})
+
+router.get('/removeFromCart', auth, (req, res) => {
+    User.findOneAndUpdate({ _id: req.user._id }, { $pull: { cart: { id: req.query.id } } }, { new: true }, (err, userInfo) => {
+        const cart = userInfo.cart
+        const array = cart.map(item => item.id)
+        Product.find({ _id: { $in: array } }).populate('writer').exec((err, productInfo) => {
+            return res.status(200).json({ productInfo, cart })
+        })
     })
 })
 
