@@ -47,7 +47,10 @@ function CartPage(props) {
                     <Empty description={false} />
                 </>
             }
-            <Paypal />
+            {ShowTotal ?
+                <Paypal total={Total} />
+                : <p>No items in the Cart</p>
+            }
         </div>
     )
 }
